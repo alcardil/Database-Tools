@@ -179,5 +179,4 @@ def map_data(source_db, destination_db, source_table, destination_table, source_
 	for db in destination_db:
 
 
-#create_db('sqlite', "C:\\Users\\654763\\test.db")
-#create_db('mysql', 'root:adminP@55w0rd@localhost')
+
