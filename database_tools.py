@@ -1,5 +1,4 @@
 from sqlalchemy import create_engine, Column, Integer, Text, Date, text
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 import sqlite3
 import os
@@ -63,9 +62,8 @@ def create_db(connection_type, connection_string): #refactor now that connection
 		connection_string = 'postgresql://' + connection_string
 		raise ValueError('A very specific bad thing happened: pgsql not implemented yet')
 	elif connection_type == 'sqlite':
-		conn = sqlite3.connect(connection_string)
+		conn = sqlite3.connect(connection_string.split(":///")[1])
 		conn.close()
-		connection_string = connection_type + ':///' + connection_string
 		engine = create_engine(connection_string, echo=True)
 		session = sessionmaker()
 		session.configure(bind=engine)
@@ -74,7 +72,6 @@ def create_db(connection_type, connection_string): #refactor now that connection
 		s.close
 
 	elif connection_type == 'mysql':
-		connection_string = connection_type + '://' + connection_string
 		print("Enter database name: ")
 		dbname = input()
 		engine = create_engine(connection_string, echo=True)
@@ -99,6 +96,7 @@ def create_table(tablename, columns): #probably need to add session/db object to
 	sql_text += ",\n\t PRIMARY KEY (" + primary + "))"
 	sql = text(sql_text)
 	session = sessionmaker()
+	session.configure(bind=engine)
 	s = session()
 	s.execute(sql)
 	s.close()
@@ -108,6 +106,7 @@ def add_column(tablename, column): #probably need to add session/db object to in
 	adds a column to a table
 	'''
 	session = sessionmaker()
+	session.configure(bind=engine)
 	s = session()
 	s.execute("ALTER TABLE " + tablename + " ADD COLUMN " + column.name + " {" + column.data_type + "}")
 	s.close()
@@ -164,6 +163,9 @@ def get_mysql_schema(connection_string=''):
 	'''
 	gets the schema from a mysql database
 	'''
+	engine = create_engine(connection_string, echo=True)
+	session = sessionmaker()
+	session.configure(bind=engine)
 	pass
 
 def get_schema(db_type, connection_string=''):
@@ -177,6 +179,4 @@ def map_data(source_db, destination_db, source_table, destination_table, source_
 	sql_text = text(sql_text)
 	column_data = source_db.execute(sql_text)
 	for db in destination_db:
-
-
 
