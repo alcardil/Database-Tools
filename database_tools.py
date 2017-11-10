@@ -37,7 +37,7 @@ def generate_mysql_string(username='', password='', servername='', dbname=''):
 	'''
 	Generates a mysql connection string
 	'''
-	connection_string = "mysql://" + username + ":" + password + "@" + servername + "/" + dbname
+	connection_string = "mysql+pymysql://" + username + ":" + password + "@" + servername + "/" + dbname
 	return connection_string
 
 def generate_sqlite_string(path=''):
@@ -163,10 +163,18 @@ def get_mysql_schema(connection_string=''):
 	'''
 	gets the schema from a mysql database
 	'''
-	engine = create_engine(connection_string, echo=True)
+	engine = create_engine(connection_string)
 	session = sessionmaker()
 	session.configure(bind=engine)
-	pass
+	s = session()
+	schema = {}
+	tables = s.execute("show tables")
+	for table in tables:
+		schema[str(table[0])] = {}
+		columns = s.execute("show columns from " + table[0])
+		for column in columns:
+			schema[str(table[0])][str(column[0])] = (str(column[1]), str(column[2]))
+	return schema
 
 def get_schema(db_type, connection_string=''):
 	'''
