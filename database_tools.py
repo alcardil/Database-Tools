@@ -183,8 +183,8 @@ def get_schema(db_type, connection_string=''):
 	pass
 
 def map_data(source_db, destination_db, source_table, destination_table, source_column, destination_column):
-	sql_text = "SELECT " + source_column + " FROM " + source_table
-	sql_text = text(sql_text)
-	column_data = source_db.execute(sql_text)
-	for db in destination_db:
-
+	#sql_text = "SELECT " + source_column + " FROM " + source_table
+	#sql_text = text(sql_text)
+	#column_data = source_db.execute(sql_text)
+	#for db in destination_db:
+	#THERE IS A BETTER WAY TO DO THIS...
